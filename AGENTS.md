@@ -30,6 +30,18 @@ Add new Playwright tests for an existing page and approved scenario.
 - Do not use XPath unless no stable locator exists.
 - Prefer getByRole, getByLabel, getByText, and data-testid.
 
+## Locator priority
+1. getByRole with accessible name
+2. getByLabel / getByPlaceholder
+3. getByTestId
+4. stable CSS only if needed
+5. never use XPath unless no alternative
+Before finalizing test:
+- verify every locator is unique
+- avoid nth() unless explaining why
+- prefer user-facing locators
+- ask for data-testid recommendation if page has weak accessibility
+
 ## Code Standards
 - Test files must be inside /tests.
 - Page objects must be inside /pages.
