@@ -9,4 +9,3 @@ node_modules/
 /allure-report
 /allure-results
 /.playwright-mcp
-.env
