@@ -114,6 +114,43 @@ npx allure serve allure-results
 
 ---
 
+## Running in Docker
+
+Run the whole suite inside a sealed container (Node + browsers + dependencies
+baked in via Playwright's official image — no local Playwright install needed).
+
+> Requires Docker Desktop running. The `HEADLESS` env var makes the tests run
+> headless inside the container; `playwright.config.ts` reads it
+> (`headless: !!process.env.HEADLESS`), so locally you still get a headed browser.
+
+```bash
+# 1. Build the image (recipe is in ./Dockerfile). Only rebuild when deps change.
+docker build -t client-tests .
+
+# 2. Run the tests — credentials injected at runtime, never baked into the image
+docker run --rm --env-file .env -e HEADLESS=1 client-tests
+
+# 3. Same run, but save the HTML report to your machine (volume mount)
+docker run --rm \
+  --env-file .env \
+  -e HEADLESS=1 \
+  -v "$(pwd)/playwright-report:/app/playwright-report" \
+  client-tests
+
+# then view it locally:
+npx playwright show-report
+```
+
+**Flags explained:**
+- `--rm` — delete the container when it finishes (containers are disposable).
+- `--env-file .env` — inject local `USER_EMAIL` / `USER_PASSWORD` at runtime
+  (secrets stay out of the image — never bake them in).
+- `-e HEADLESS=1` — run headless (a container has no display).
+- `-v "$(pwd)/playwright-report:/app/playwright-report"` — map a host folder to the
+  container so the report survives after the container is removed.
+
+---
+
 ## Writing New Tests
 
 This repo follows a strict authoring workflow — see [AGENTS.md](AGENTS.md):
